@@ -1,0 +1,36 @@
+{
+	"schemaVersion": 1,
+	"id": "open-please",
+	"version": "${version}",
+	"name": "Open Please!",
+	"description": "Simple and lightweight mod to automatically open doors and close them behind you.",
+	"authors": [
+		"@michaelrex2012"
+	],
+	"contact": {
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/open-please/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"michael.openplease.OpenPlease"
+		],
+		"fabric-datagen": [
+			"michael.openplease.OpenPleaseDataGenerator"
+		]
+	},
+	"mixins": [
+		"open-please.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.9",
+		"minecraft": "~1.21.3",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
