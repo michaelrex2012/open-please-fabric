@@ -1,17 +1,17 @@
 package michael.openplease;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class OpenPlease implements ModInitializer {
-	// Define the distance variable
-	private static final double DOOR_TRIGGER_DISTANCE = 1; // Distance in blocks
+	public static final double openDistance = 1;
 
 	@Override
 	public void onInitialize() {
@@ -23,10 +23,10 @@ public class OpenPlease implements ModInitializer {
 		world.getPlayers().forEach(player -> {
 			BlockPos playerPos = player.getBlockPos();
 
-			// Check surrounding blocks within the defined distance
-			for (int x = -(int) DOOR_TRIGGER_DISTANCE; x <= (int) DOOR_TRIGGER_DISTANCE; x++) {
-				for (int y = -1; y <= 2; y++) { // Include vertical range for doors
-					for (int z = -(int) DOOR_TRIGGER_DISTANCE; z <= (int) DOOR_TRIGGER_DISTANCE; z++) {
+			// Check surrounding blocks within 2 blocks
+			for (int x = -(int) openDistance; x <= (int) openDistance; x++) {
+				for (int y = 0; y <= 0; y++) {
+					for (int z = -(int) openDistance; z <= (int) openDistance; z++) {
 						BlockPos pos = playerPos.add(x, y, z);
 						if (isDoor(world, pos)) {
 							handleDoor(world, pos, playerPos);
@@ -46,17 +46,13 @@ public class OpenPlease implements ModInitializer {
 		DoorBlock door = (DoorBlock) world.getBlockState(doorPos).getBlock();
 		double distance = playerPos.getSquaredDistance(doorPos.getX(), doorPos.getY(), doorPos.getZ());
 
-		boolean isOpen = world.getBlockState(doorPos).get(Properties.OPEN);
-		double triggerDistanceSquared = DOOR_TRIGGER_DISTANCE * DOOR_TRIGGER_DISTANCE;
-
-		if (distance <= triggerDistanceSquared && !isOpen) {
+		boolean isOpen = world.getBlockState(doorPos).get(DoorBlock.OPEN);
+		if (distance <= 4 && !isOpen) {
 			// Open the door if within range
-			world.setBlockState(doorPos, world.getBlockState(doorPos).with(Properties.OPEN, true));
-			playDoorSound(world, doorPos, true);
-		} else if (distance > triggerDistanceSquared && isOpen) {
+			world.setBlockState(doorPos, world.getBlockState(doorPos).with(DoorBlock.OPEN, true));
+		} else if (distance > 4 && isOpen) {
 			// Close the door if out of range
-			world.setBlockState(doorPos, world.getBlockState(doorPos).with(Properties.OPEN, false));
-			playDoorSound(world, doorPos, false);
+			world.setBlockState(doorPos, world.getBlockState(doorPos).with(DoorBlock.OPEN, false));
 		}
 	}
 
