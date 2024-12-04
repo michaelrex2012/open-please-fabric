@@ -1,37 +1,55 @@
-package com.example.autodoor;
+package michael.openplease;
 
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.DoorBlock;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.RaycastContext;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.door.DoorBlock;
+import net.minecraft.world.World;
 
-public class AutoDoorMod {
+public class OpenPlease implements ModInitializer {
+	@Override
+	public void onInitialize() {
+		// Register tick callback
+		net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_WORLD_TICK.register(this::onWorldTick);
+	}
 
-	public static void autoOpenDoors() {
-		MinecraftClient client = MinecraftClient.getInstance();
-		ClientPlayerEntity player = client.player;
+	private void onWorldTick(ServerWorld world) {
+		world.getPlayers().forEach(player -> {
+			BlockPos playerPos = player.getBlockPos();
 
-		if (player != null) {
-			// Perform raycasting from the player's viewpoint
-			BlockHitResult raycastResult = (BlockHitResult) client.crosshairTarget;
-
-			if (raycastResult != null && raycastResult.getType() == BlockHitResult.Type.BLOCK) {
-				BlockPos blockPos = raycastResult.getBlockPos();
-				BlockState blockState = player.getWorld().getBlockState(blockPos);
-
-				// Check if the block is a DoorBlock and if it is closed
-				if (blockState.getBlock() instanceof DoorBlock) {
-					// If the door is closed, interact to open it
-					if (!blockState.get(DoorBlock.OPEN)) {
-						player.interactAt(player , raycastResult.getPos(), Hand.MAIN_HAND);
+			// Check surrounding blocks within 2 blocks
+			for (int x = -2; x <= 2; x++) {
+				for (int y = -2; y <= 2; y++) {
+					for (int z = -2; z <= 2; z++) {
+						BlockPos pos = playerPos.add(x, y, z);
+						if (isDoor(world, pos)) {
+							handleDoor(world, pos, playerPos);
+						}
 					}
 				}
 			}
+		});
+	}
+
+	private boolean isDoor(World world, BlockPos pos) {
+		Block block = world.getBlockState(pos).getBlock();
+		return block instanceof DoorBlock;
+	}
+
+	private void handleDoor(World world, BlockPos doorPos, BlockPos playerPos) {
+		DoorBlock door = (DoorBlock) world.getBlockState(doorPos).getBlock();
+		double distance = playerPos.getSquaredDistance(doorPos.getX(), doorPos.getY(), doorPos.getZ());
+
+		boolean isOpen = world.getBlockState(doorPos).get(DoorBlock.OPEN);
+		if (distance <= 4 && !isOpen) {
+			// Open the door if within range
+			world.setBlockState(doorPos, world.getBlockState(doorPos).with(DoorBlock.OPEN, true));
+		} else if (distance > 4 && isOpen) {
+			// Close the door if out of range
+			world.setBlockState(doorPos, world.getBlockState(doorPos).with(DoorBlock.OPEN, false));
 		}
 	}
 }
