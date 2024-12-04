@@ -1,16 +1,37 @@
-package michael.openplease;
+package com.example.autodoor;
 
-import net.fabricmc.api.ModInitializer;
+import net.minecraft.block.DoorBlock;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.RaycastContext;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.door.DoorBlock;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public class AutoDoorMod {
 
-public class OpenPlease implements ModInitializer {
-	public static final String MOD_ID = "open-please";
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	public static void autoOpenDoors() {
+		MinecraftClient client = MinecraftClient.getInstance();
+		ClientPlayerEntity player = client.player;
 
-	@Override
-	public void onInitialize() {
-		LOGGER.error("Open Please has successfully started!");
+		if (player != null) {
+			// Perform raycasting from the player's viewpoint
+			BlockHitResult raycastResult = (BlockHitResult) client.crosshairTarget;
+
+			if (raycastResult != null && raycastResult.getType() == BlockHitResult.Type.BLOCK) {
+				BlockPos blockPos = raycastResult.getBlockPos();
+				BlockState blockState = player.getWorld().getBlockState(blockPos);
+
+				// Check if the block is a DoorBlock and if it is closed
+				if (blockState.getBlock() instanceof DoorBlock) {
+					// If the door is closed, interact to open it
+					if (!blockState.get(DoorBlock.OPEN)) {
+						player.interactAt(player , raycastResult.getPos(), Hand.MAIN_HAND);
+					}
+				}
+			}
+		}
 	}
 }

@@ -8,9 +8,9 @@
 		"@michaelrex2012"
 	],
 	"contact": {
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/michaelrex2012/open-please-fabric"
 	},
-	"license": "CC0-1.0",
+	"license": "MIT",
 	"icon": "assets/open-please/icon.png",
 	"environment": "*",
 	"entrypoints": {
@@ -19,6 +19,9 @@
 		],
 		"fabric-datagen": [
 			"michael.openplease.OpenPleaseDataGenerator"
+		],
+		"client": [
+
 		]
 	},
 	"mixins": [
