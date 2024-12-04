@@ -6,10 +6,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class OpenPlease implements ModInitializer {
+	public static final int detectDistance = 5;
+
 	@Override
 	public void onInitialize() {
 		// Register tick callback
@@ -21,9 +24,9 @@ public class OpenPlease implements ModInitializer {
 			BlockPos playerPos = player.getBlockPos();
 
 			// Check surrounding blocks within 2 blocks
-			for (int x = -2; x <= 2; x++) {
-				for (int y = -2; y <= 2; y++) {
-					for (int z = -2; z <= 2; z++) {
+			for (int x = -detectDistance; x <= detectDistance; x++) {
+				for (int y = -detectDistance; y <= detectDistance; y++) {
+					for (int z = -detectDistance; z <= detectDistance; z++) {
 						BlockPos pos = playerPos.add(x, y, z);
 						if (isDoor(world, pos)) {
 							handleDoor(world, pos, playerPos);
@@ -50,6 +53,14 @@ public class OpenPlease implements ModInitializer {
 		} else if (distance > 4 && isOpen) {
 			// Close the door if out of range
 			world.setBlockState(doorPos, world.getBlockState(doorPos).with(DoorBlock.OPEN, false));
+		}
+	}
+
+	private void playDoorSound(World world, BlockPos pos, boolean open) {
+		if (open) {
+			world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_DOOR_OPEN, net.minecraft.sound.SoundCategory.BLOCKS, 1.0f, 1.0f);
+		} else {
+			world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_DOOR_CLOSE, net.minecraft.sound.SoundCategory.BLOCKS, 1.0f, 1.0f);
 		}
 	}
 }
