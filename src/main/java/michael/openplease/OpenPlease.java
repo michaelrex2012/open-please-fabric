@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 
 public class OpenPlease implements ModInitializer {
 	// Define the distance variable
-	private static final double DOOR_TRIGGER_DISTANCE = 2.0; // Distance in blocks
+	private static final double DOOR_TRIGGER_DISTANCE = 1; // Distance in blocks
 
 	@Override
 	public void onInitialize() {
