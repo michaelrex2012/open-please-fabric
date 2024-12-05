@@ -11,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class OpenPlease implements ModInitializer {
-	public static final double openDistance = 1;
+	public static final int openDistance = 1;
 
 	@Override
 	public void onInitialize() {
@@ -24,9 +24,9 @@ public class OpenPlease implements ModInitializer {
 			BlockPos playerPos = player.getBlockPos();
 
 			// Check surrounding blocks within 2 blocks
-			for (int x = -(int) openDistance; x <= (int) openDistance; x++) {
-				for (int y = 0; y <= 0; y++) {
-					for (int z = -(int) openDistance; z <= (int) openDistance; z++) {
+			for (int x = -openDistance; x <= openDistance; x++) {
+				for (int y = -openDistance; y <= openDistance; y++) {
+					for (int z = -openDistance; z <= openDistance; z++) {
 						BlockPos pos = playerPos.add(x, y, z);
 						if (isDoor(world, pos)) {
 							handleDoor(world, pos, playerPos);
