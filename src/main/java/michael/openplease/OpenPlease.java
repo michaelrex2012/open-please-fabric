@@ -1,9 +1,7 @@
 package michael.openplease;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
