@@ -9,7 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class OpenPlease implements ModInitializer {
-	public static final int openDistance = 1;
+	public float doorDistance = 4;
 
 	@Override
 	public void onInitialize() {
@@ -22,9 +22,9 @@ public class OpenPlease implements ModInitializer {
 			BlockPos playerPos = player.getBlockPos();
 
 			// Check surrounding blocks within 2 blocks
-			for (int x = -openDistance; x <= openDistance; x++) {
-				for (int y = -openDistance; y <= openDistance; y++) {
-					for (int z = -openDistance; z <= openDistance; z++) {
+			for (int x = -2; x <= 2; x++) {
+				for (int y = -2; y <= 2; y++) {
+					for (int z = -2; z <= 2; z++) {
 						BlockPos pos = playerPos.add(x, y, z);
 						if (isDoor(world, pos)) {
 							handleDoor(world, pos, playerPos);
@@ -45,12 +45,12 @@ public class OpenPlease implements ModInitializer {
 		double distance = playerPos.getSquaredDistance(doorPos.getX(), doorPos.getY(), doorPos.getZ());
 
 		boolean isOpen = world.getBlockState(doorPos).get(DoorBlock.OPEN);
-		if (distance <= 4 && !isOpen) {
-			// Open the door if within range
+		if (distance <= doorDistance && !isOpen) {
 			world.setBlockState(doorPos, world.getBlockState(doorPos).with(DoorBlock.OPEN, true));
-		} else if (distance > 4 && isOpen) {
-			// Close the door if out of range
+			playDoorSound(world, doorPos, true);
+		} else if (distance > doorDistance && isOpen) {
 			world.setBlockState(doorPos, world.getBlockState(doorPos).with(DoorBlock.OPEN, false));
+			playDoorSound(world, doorPos, false);
 		}
 	}
 
