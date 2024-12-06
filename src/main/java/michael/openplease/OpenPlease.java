@@ -4,7 +4,6 @@ import net.fabricmc.api.ModInitializer;
 import net.minecraft.block.Block;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -47,18 +46,8 @@ public class OpenPlease implements ModInitializer {
 		boolean isOpen = world.getBlockState(doorPos).get(DoorBlock.OPEN);
 		if (distance <= doorDistance && !isOpen) {
 			world.setBlockState(doorPos, world.getBlockState(doorPos).with(DoorBlock.OPEN, true));
-			playDoorSound(world, doorPos, true);
 		} else if (distance > doorDistance && isOpen) {
 			world.setBlockState(doorPos, world.getBlockState(doorPos).with(DoorBlock.OPEN, false));
-			playDoorSound(world, doorPos, false);
-		}
-	}
-
-	private void playDoorSound(World world, BlockPos pos, boolean open) {
-		if (open) {
-			world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_DOOR_OPEN, net.minecraft.sound.SoundCategory.BLOCKS, 1.0f, 1.0f);
-		} else {
-			world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_DOOR_CLOSE, net.minecraft.sound.SoundCategory.BLOCKS, 1.0f, 1.0f);
 		}
 	}
 }
