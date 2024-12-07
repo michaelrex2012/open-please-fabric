@@ -3,6 +3,8 @@ package michael.openplease;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.block.Block;
 import net.minecraft.block.DoorBlock;
+import net.minecraft.block.FenceGateBlock;
+import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -21,12 +23,18 @@ public class OpenPlease implements ModInitializer {
 			BlockPos playerPos = player.getBlockPos();
 
 			// Check surrounding blocks within 2 blocks
-			for (int x = -2; x <= 2; x++) {
-				for (int y = -2; y <= 2; y++) {
-					for (int z = -2; z <= 2; z++) {
+			for (int x = -2; x <= 1; x++) {
+				for (int y = -2; y <= 1; y++) {
+					for (int z = -3; z <= 1; z++) {
 						BlockPos pos = playerPos.add(x, y, z);
 						if (isDoor(world, pos)) {
 							handleDoor(world, pos, playerPos);
+						}
+						if (isTrapdoor(world, pos)) {
+							handleTrapdoor(world, pos, playerPos);
+						}
+						if (isFenceGate(world, pos)) {
+							handleFenceGate(world, pos, playerPos);
 						}
 					}
 				}
@@ -39,8 +47,17 @@ public class OpenPlease implements ModInitializer {
 		return block instanceof DoorBlock;
 	}
 
+	private boolean isTrapdoor(World world, BlockPos pos) {
+		Block block = world.getBlockState(pos).getBlock();
+		return block instanceof TrapdoorBlock;
+	}
+
+	private boolean isFenceGate(World world, BlockPos pos) {
+		Block block = world.getBlockState(pos).getBlock();
+		return block instanceof FenceGateBlock;
+	}
+
 	private void handleDoor(World world, BlockPos doorPos, BlockPos playerPos) {
-		DoorBlock door = (DoorBlock) world.getBlockState(doorPos).getBlock();
 		double distance = playerPos.getSquaredDistance(doorPos.getX(), doorPos.getY(), doorPos.getZ());
 
 		boolean isOpen = world.getBlockState(doorPos).get(DoorBlock.OPEN);
@@ -48,6 +65,28 @@ public class OpenPlease implements ModInitializer {
 			world.setBlockState(doorPos, world.getBlockState(doorPos).with(DoorBlock.OPEN, true));
 		} else if (distance > doorDistance && isOpen) {
 			world.setBlockState(doorPos, world.getBlockState(doorPos).with(DoorBlock.OPEN, false));
+		}
+	}
+
+	private void handleTrapdoor(World world, BlockPos trapdoorPos, BlockPos playerPos) {
+		double distance = playerPos.getSquaredDistance(trapdoorPos.getX(), trapdoorPos.getY(), trapdoorPos.getZ());
+
+		boolean isOpen = world.getBlockState(trapdoorPos).get(TrapdoorBlock.OPEN);
+		if (distance <= doorDistance && !isOpen) {
+			world.setBlockState(trapdoorPos, world.getBlockState(trapdoorPos).with(TrapdoorBlock.OPEN, true));
+		} else if (distance > doorDistance && isOpen) {
+			world.setBlockState(trapdoorPos, world.getBlockState(trapdoorPos).with(TrapdoorBlock.OPEN, false));
+		}
+	}
+
+	private void handleFenceGate(World world, BlockPos fenceGatePos, BlockPos playerPos) {
+		double distance = playerPos.getSquaredDistance(fenceGatePos.getX(), fenceGatePos.getY(), fenceGatePos.getZ());
+
+		boolean isOpen = world.getBlockState(fenceGatePos).get(FenceGateBlock.OPEN);
+		if (distance <= doorDistance && !isOpen) {
+			world.setBlockState(fenceGatePos, world.getBlockState(fenceGatePos).with(FenceGateBlock.OPEN, true));
+		} else if (distance > doorDistance && isOpen) {
+			world.setBlockState(fenceGatePos, world.getBlockState(fenceGatePos).with(FenceGateBlock.OPEN, false));
 		}
 	}
 }
