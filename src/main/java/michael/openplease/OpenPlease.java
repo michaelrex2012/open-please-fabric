@@ -23,9 +23,9 @@ public class OpenPlease implements ModInitializer {
 			BlockPos playerPos = player.getBlockPos();
 
 			// Check surrounding blocks within 2 blocks
-			for (int x = -2; x <= 1; x++) {
-				for (int y = -2; y <= 1; y++) {
-					for (int z = -3; z <= 1; z++) {
+			for (int x = -4; x <= 4; x++) {
+				for (int y = -4; y <= 4; y++) {
+					for (int z = -4; z <= 4; z++) {
 						BlockPos pos = playerPos.add(x, y, z);
 						if (isDoor(world, pos)) {
 							handleDoor(world, pos, playerPos);
