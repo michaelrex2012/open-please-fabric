@@ -1,3 +1,3 @@
 # Open Please!
-Open Please is aa lightweight mod that opens/closes doors when a distance treshold is met.
-The mod is avalble for download at [Modrinth]() and [Github]() and soon will be exstended to CurseForge.
+Open Please is aa lightweight mod that opens/closes doors when a distance threshold is met.
+The mod is available for download at [Modrinth]() and [GitHub]() and soon will be extended to CurseForge.
