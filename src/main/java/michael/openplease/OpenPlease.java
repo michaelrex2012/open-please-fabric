@@ -6,14 +6,15 @@ import net.minecraft.block.Block;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.TrapdoorBlock;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.lwjgl.glfw.GLFW;
-
-import javax.swing.text.JTextComponent;
 
 public class OpenPlease implements ModInitializer {
 	public float doorDistance = 4;
@@ -35,6 +36,13 @@ public class OpenPlease implements ModInitializer {
 	private void onWorldTick(ServerWorld world) {
 		if (doorToggle.wasPressed()){
 			toggleState = !toggleState;
+
+			if (toggleState) {
+				MinecraftClient.getInstance().inGameHud.setOverlayMessage(Text.literal("Auto-Open Enabled!").formatted(Formatting.GREEN), false);
+			}
+			if (!toggleState) {
+				MinecraftClient.getInstance().inGameHud.setOverlayMessage(Text.literal("Auto-Open Disabled!").formatted(Formatting.RED), false);
+			}
 		}
 		if (toggleState) {
 			world.getPlayers().forEach(player -> {
