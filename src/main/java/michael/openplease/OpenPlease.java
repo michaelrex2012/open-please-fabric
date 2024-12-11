@@ -1,46 +1,65 @@
 package michael.openplease;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.TrapdoorBlock;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.lwjgl.glfw.GLFW;
+
+import javax.swing.text.JTextComponent;
 
 public class OpenPlease implements ModInitializer {
 	public float doorDistance = 4;
+	public static KeyBinding doorToggle;
+	public boolean toggleState = true;
 
 	@Override
 	public void onInitialize() {
-		// Register tick callback
+		doorToggle = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+				"key.openplease.toggle",
+				InputUtil.Type.KEYSYM,
+				GLFW.GLFW_KEY_O,
+				"category.openplease"
+		));
+
 		net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_WORLD_TICK.register(this::onWorldTick);
 	}
 
 	private void onWorldTick(ServerWorld world) {
-		world.getPlayers().forEach(player -> {
-			BlockPos playerPos = player.getBlockPos();
+		if (doorToggle.wasPressed()){
+			toggleState = !toggleState;
+		}
+		if (toggleState) {
+			world.getPlayers().forEach(player -> {
+				BlockPos playerPos = player.getBlockPos();
 
-			// Check surrounding blocks within 2 blocks
-			for (int x = -4; x <= 4; x++) {
-				for (int y = -4; y <= 4; y++) {
-					for (int z = -4; z <= 4; z++) {
-						BlockPos pos = playerPos.add(x, y, z);
-						if (isDoor(world, pos)) {
-							handleDoor(world, pos, playerPos);
-						}
-						if (isTrapdoor(world, pos)) {
-							handleTrapdoor(world, pos, playerPos);
-						}
-						if (isFenceGate(world, pos)) {
-							handleFenceGate(world, pos, playerPos);
+				// Check surrounding blocks within 2 blocks
+				for (int x = -4; x <= 4; x++) {
+					for (int y = -4; y <= 4; y++) {
+						for (int z = -4; z <= 4; z++) {
+							BlockPos pos = playerPos.add(x, y, z);
+							if (isDoor(world, pos)) {
+								handleDoor(world, pos, playerPos);
+							}
+							if (isTrapdoor(world, pos)) {
+								handleTrapdoor(world, pos, playerPos);
+							}
+							if (isFenceGate(world, pos)) {
+								handleFenceGate(world, pos, playerPos);
+							}
 						}
 					}
 				}
 			}
-		});
-	}
+		);
+	}}
 
 	private boolean isDoor(World world, BlockPos pos) {
 		Block block = world.getBlockState(pos).getBlock();
