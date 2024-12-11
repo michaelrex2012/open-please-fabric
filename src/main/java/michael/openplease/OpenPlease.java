@@ -38,10 +38,10 @@ public class OpenPlease implements ModInitializer {
 			toggleState = !toggleState;
 
 			if (toggleState) {
-				MinecraftClient.getInstance().inGameHud.setOverlayMessage(Text.literal("Auto-Open Enabled!").formatted(Formatting.GREEN), false);
+				MinecraftClient.getInstance().inGameHud.setOverlayMessage(Text.literal("Auto-Open Enabled!").formatted(Formatting.GREEN), true);
 			}
 			if (!toggleState) {
-				MinecraftClient.getInstance().inGameHud.setOverlayMessage(Text.literal("Auto-Open Disabled!").formatted(Formatting.RED), false);
+				MinecraftClient.getInstance().inGameHud.setOverlayMessage(Text.literal("Auto-Open Disabled!").formatted(Formatting.RED), true);
 			}
 		}
 		if (toggleState) {
