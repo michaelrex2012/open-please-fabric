@@ -26,7 +26,7 @@ public class OpenPlease implements ModInitializer {
 		doorToggle = KeyBindingHelper.registerKeyBinding(new KeyBinding(
 				"key.openplease.toggle",
 				InputUtil.Type.KEYSYM,
-				GLFW.GLFW_KEY_O,
+				GLFW.GLFW_KEY_R,
 				"category.openplease"
 		));
 
