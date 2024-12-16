@@ -2,14 +2,13 @@ package michael.openplease;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.DoorBlock;
-import net.minecraft.block.FenceGateBlock;
-import net.minecraft.block.TrapdoorBlock;
+import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
@@ -44,6 +43,7 @@ public class OpenPlease implements ModInitializer {
 				MinecraftClient.getInstance().inGameHud.setOverlayMessage(Text.literal("Auto-Open Disabled!").formatted(Formatting.RED), true);
 			}
 		}
+
 		if (toggleState) {
 			world.getPlayers().forEach(player -> {
 				BlockPos playerPos = player.getBlockPos();
@@ -53,14 +53,36 @@ public class OpenPlease implements ModInitializer {
 					for (int y = -4; y <= 4; y++) {
 						for (int z = -4; z <= 4; z++) {
 							BlockPos pos = playerPos.add(x, y, z);
+
 							if (isDoor(world, pos)) {
+								boolean oldStateDoor = world.getBlockState(pos).get(DoorBlock.OPEN);
 								handleDoor(world, pos, playerPos);
+								if (oldStateDoor && !world.getBlockState(pos).get(DoorBlock.OPEN)) {
+									world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_DOOR_CLOSE, SoundCategory.BLOCKS, 1.0f, 1.0f);
+								}
+								if (!oldStateDoor && world.getBlockState(pos).get(DoorBlock.OPEN)) {
+									world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_DOOR_OPEN, SoundCategory.BLOCKS, 1.0f, 1.0f);
+								}
 							}
 							if (isTrapdoor(world, pos)) {
+								boolean oldStateTrapDoor = world.getBlockState(pos).get(TrapdoorBlock.OPEN);
 								handleTrapdoor(world, pos, playerPos);
+								if (oldStateTrapDoor && !world.getBlockState(pos).get(TrapdoorBlock.OPEN)) {
+									world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_TRAPDOOR_CLOSE, SoundCategory.BLOCKS, 1.0f, 1.0f);
+								}
+								if (!oldStateTrapDoor && world.getBlockState(pos).get(TrapdoorBlock.OPEN)) {
+									world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_TRAPDOOR_OPEN, SoundCategory.BLOCKS, 1.0f, 1.0f);
+								}
 							}
 							if (isFenceGate(world, pos)) {
+								boolean oldStateFenceGate = world.getBlockState(pos).get(FenceGateBlock.OPEN);
 								handleFenceGate(world, pos, playerPos);
+								if (oldStateFenceGate && !world.getBlockState(pos).get(FenceGateBlock.OPEN)) {
+									world.playSound(null, pos, SoundEvents.BLOCK_FENCE_GATE_CLOSE, SoundCategory.BLOCKS, 1.0f, 1.0f);
+								}
+								if (!oldStateFenceGate && world.getBlockState(pos).get(FenceGateBlock.OPEN)) {
+									world.playSound(null, pos, SoundEvents.BLOCK_FENCE_GATE_OPEN, SoundCategory.BLOCKS, 1.0f, 1.0f);
+								}
 							}
 						}
 					}
@@ -71,7 +93,7 @@ public class OpenPlease implements ModInitializer {
 
 	private boolean isDoor(World world, BlockPos pos) {
 		Block block = world.getBlockState(pos).getBlock();
-		return block instanceof DoorBlock;
+		return block instanceof DoorBlock && block != Blocks.IRON_DOOR;
 	}
 
 	private boolean isTrapdoor(World world, BlockPos pos) {
@@ -88,9 +110,9 @@ public class OpenPlease implements ModInitializer {
 		double distance = playerPos.getSquaredDistance(doorPos.getX(), doorPos.getY(), doorPos.getZ());
 
 		boolean isOpen = world.getBlockState(doorPos).get(DoorBlock.OPEN);
-		if (distance <= doorDistance && !isOpen) {
+		if (distance <= doorDistance + 2 && !isOpen) {
 			world.setBlockState(doorPos, world.getBlockState(doorPos).with(DoorBlock.OPEN, true));
-		} else if (distance > doorDistance && isOpen) {
+		} else if (distance > doorDistance + 2 && isOpen) {
 			world.setBlockState(doorPos, world.getBlockState(doorPos).with(DoorBlock.OPEN, false));
 		}
 	}
