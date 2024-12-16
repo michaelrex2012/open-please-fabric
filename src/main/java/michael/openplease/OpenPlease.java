@@ -98,7 +98,7 @@ public class OpenPlease implements ModInitializer {
 
 	private boolean isTrapdoor(World world, BlockPos pos) {
 		Block block = world.getBlockState(pos).getBlock();
-		return block instanceof TrapdoorBlock;
+		return block instanceof TrapdoorBlock && block != Blocks.IRON_TRAPDOOR;
 	}
 
 	private boolean isFenceGate(World world, BlockPos pos) {
