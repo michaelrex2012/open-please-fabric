@@ -2,6 +2,7 @@ package michael.openplease;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
@@ -17,34 +18,73 @@ import org.lwjgl.glfw.GLFW;
 
 public class OpenPlease implements ModInitializer {
 	public float doorDistance = 4;
-	public static KeyBinding doorToggle;
-	public boolean toggleState = true;
+	public static KeyBinding openToggle;
+	public static KeyBinding soundToggle;
+	public static KeyBinding getStates;
+	public boolean toggleOpen = true;
+	public boolean toggleSound = true;
 
 	@Override
 	public void onInitialize() {
-		doorToggle = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-				"key.openplease.toggle",
+		openToggle = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+				"key.openplease.toggleopen",
 				InputUtil.Type.KEYSYM,
 				GLFW.GLFW_KEY_R,
 				"category.openplease"
 		));
+		soundToggle = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+				"key.openplease.togglesound",
+				InputUtil.Type.KEYSYM,
+				GLFW.GLFW_KEY_Y,
+				"category.openplease"
+		));
+		getStates = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+				"key.openplease.getstates",
+				InputUtil.Type.KEYSYM,
+				GLFW.GLFW_KEY_U,
+				"category.openplease"
+		));
 
-		net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_WORLD_TICK.register(this::onWorldTick);
+		ServerTickEvents.END_WORLD_TICK.register(this::onWorldTick);
 	}
 
 	private void onWorldTick(ServerWorld world) {
-		if (doorToggle.wasPressed()){
-			toggleState = !toggleState;
+		if (openToggle.wasPressed()){
+			toggleOpen = !toggleOpen;
 
-			if (toggleState) {
+			if (toggleOpen) {
 				MinecraftClient.getInstance().inGameHud.setOverlayMessage(Text.literal("Auto-Open Enabled!").formatted(Formatting.GREEN), true);
 			}
-			if (!toggleState) {
+			if (!toggleOpen) {
 				MinecraftClient.getInstance().inGameHud.setOverlayMessage(Text.literal("Auto-Open Disabled!").formatted(Formatting.RED), true);
 			}
 		}
+		if (soundToggle.wasPressed()){
+			toggleSound = !toggleSound;
 
-		if (toggleState) {
+			if (toggleSound) {
+				MinecraftClient.getInstance().inGameHud.setOverlayMessage(Text.literal("Sound Enabled!").formatted(Formatting.GREEN), true);
+			}
+			if (!toggleSound) {
+				MinecraftClient.getInstance().inGameHud.setOverlayMessage(Text.literal("Sound Disabled!").formatted(Formatting.RED), true);
+			}
+		}
+		if (getStates.wasPressed()){
+			Formatting toggleOpenFormat = toggleOpen ? Formatting.GREEN : Formatting.RED;
+			Formatting toggleSoundFormat = toggleSound ? Formatting.GREEN : Formatting.RED;
+			String toggleOpenText = toggleOpen ? "Enabled" : "Disabled";
+			String toggleSoundText = toggleSound ? "Enabled" : "Disabled";
+
+			MinecraftClient.getInstance().inGameHud.setOverlayMessage(
+					Text.literal("Open: ").formatted(Formatting.WHITE)
+							.append(Text.literal(toggleOpenText).formatted(toggleOpenFormat))
+							.append(Text.literal(" Sound: ").formatted(Formatting.WHITE))
+							.append(Text.literal(toggleSoundText).formatted(toggleSoundFormat)),
+					true
+			);
+		}
+
+		if (toggleOpen) {
 			world.getPlayers().forEach(player -> {
 				BlockPos playerPos = player.getBlockPos();
 
@@ -57,30 +97,30 @@ public class OpenPlease implements ModInitializer {
 							if (isDoor(world, pos)) {
 								boolean oldStateDoor = world.getBlockState(pos).get(DoorBlock.OPEN);
 								handleDoor(world, pos, playerPos);
-								if (oldStateDoor && !world.getBlockState(pos).get(DoorBlock.OPEN)) {
+								if (oldStateDoor && !world.getBlockState(pos).get(DoorBlock.OPEN) && toggleSound) {
 									world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_DOOR_CLOSE, SoundCategory.BLOCKS, 1.0f, 1.0f);
 								}
-								if (!oldStateDoor && world.getBlockState(pos).get(DoorBlock.OPEN)) {
+								if (!oldStateDoor && world.getBlockState(pos).get(DoorBlock.OPEN) && toggleSound) {
 									world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_DOOR_OPEN, SoundCategory.BLOCKS, 1.0f, 1.0f);
 								}
 							}
 							if (isTrapdoor(world, pos)) {
 								boolean oldStateTrapDoor = world.getBlockState(pos).get(TrapdoorBlock.OPEN);
 								handleTrapdoor(world, pos, playerPos);
-								if (oldStateTrapDoor && !world.getBlockState(pos).get(TrapdoorBlock.OPEN)) {
+								if (oldStateTrapDoor && !world.getBlockState(pos).get(TrapdoorBlock.OPEN) && toggleSound) {
 									world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_TRAPDOOR_CLOSE, SoundCategory.BLOCKS, 1.0f, 1.0f);
 								}
-								if (!oldStateTrapDoor && world.getBlockState(pos).get(TrapdoorBlock.OPEN)) {
+								if (!oldStateTrapDoor && world.getBlockState(pos).get(TrapdoorBlock.OPEN) && toggleSound) {
 									world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_TRAPDOOR_OPEN, SoundCategory.BLOCKS, 1.0f, 1.0f);
 								}
 							}
 							if (isFenceGate(world, pos)) {
 								boolean oldStateFenceGate = world.getBlockState(pos).get(FenceGateBlock.OPEN);
 								handleFenceGate(world, pos, playerPos);
-								if (oldStateFenceGate && !world.getBlockState(pos).get(FenceGateBlock.OPEN)) {
+								if (oldStateFenceGate && !world.getBlockState(pos).get(FenceGateBlock.OPEN) && toggleSound) {
 									world.playSound(null, pos, SoundEvents.BLOCK_FENCE_GATE_CLOSE, SoundCategory.BLOCKS, 1.0f, 1.0f);
 								}
-								if (!oldStateFenceGate && world.getBlockState(pos).get(FenceGateBlock.OPEN)) {
+								if (!oldStateFenceGate && world.getBlockState(pos).get(FenceGateBlock.OPEN) && toggleSound) {
 									world.playSound(null, pos, SoundEvents.BLOCK_FENCE_GATE_OPEN, SoundCategory.BLOCKS, 1.0f, 1.0f);
 								}
 							}
