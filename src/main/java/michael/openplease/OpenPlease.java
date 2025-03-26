@@ -76,7 +76,7 @@ public class OpenPlease implements ModInitializer {
 			String toggleSoundText = toggleSound ? "Enabled" : "Disabled";
 
 			MinecraftClient.getInstance().inGameHud.setOverlayMessage(
-					Text.literal("Open: ").formatted(Formatting.WHITE)
+					Text.literal("Auto-Open: ").formatted(Formatting.WHITE)
 							.append(Text.literal(toggleOpenText).formatted(toggleOpenFormat))
 							.append(Text.literal(" Sound: ").formatted(Formatting.WHITE))
 							.append(Text.literal(toggleSoundText).formatted(toggleSoundFormat)),
