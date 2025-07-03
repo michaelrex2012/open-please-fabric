@@ -26,5 +26,8 @@
 	},
 	"suggests": {
 		"another-mod": "*"
-	}
+	},
+	"mixins": [
+		"openplease.mixins.json"
+	]
 }

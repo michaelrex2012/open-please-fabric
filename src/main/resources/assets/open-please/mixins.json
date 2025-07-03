@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "michael.openplease.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "GameMenuScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
