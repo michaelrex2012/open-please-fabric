@@ -1,10 +1,14 @@
 package michael.openplease;
 
+import me.shedaniel.clothconfig2.api.ConfigBuilder;
+import me.shedaniel.clothconfig2.api.ConfigCategory;
+import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.server.world.ServerWorld;
@@ -16,6 +20,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 public class OpenPlease implements ModInitializer {
 	public float doorDistance = 4;
 	public static KeyBinding openToggle;
@@ -26,6 +32,7 @@ public class OpenPlease implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+
 		openToggle = KeyBindingHelper.registerKeyBinding(new KeyBinding(
 				"key.openplease.toggleopen",
 				InputUtil.Type.KEYSYM,
@@ -177,5 +184,29 @@ public class OpenPlease implements ModInitializer {
 		} else if (distance > doorDistance && isOpen) {
 			world.setBlockState(fenceGatePos, world.getBlockState(fenceGatePos).with(FenceGateBlock.OPEN, false));
 		}
+	}
+	public static void openConfigScreen(Screen parent) {
+		ConfigBuilder builder = ConfigBuilder.create()
+				.setParentScreen(parent)
+				.setTitle(Text.translatable("title.openplease.config"));
+
+		ConfigCategory general = builder.getOrCreateCategory(Text.translatable("category.openplease.general"));
+		ConfigEntryBuilder entryBuilder = builder.entryBuilder();
+
+		general.addEntry(entryBuilder
+				.startStrField(Text.translatable("option.openplease.optionA"), "what")
+				.setDefaultValue("This is the default value")
+				.setTooltip(Text.translatable("This option is awesome!"))
+				.setSaveConsumer(newValue -> {
+					// Save the new value to your config
+				})
+				.build()
+		);
+
+		builder.setSavingRunnable(() -> {
+			// Write to config file here
+		});
+
+		MinecraftClient.getInstance().setScreen(builder.build());
 	}
 }
