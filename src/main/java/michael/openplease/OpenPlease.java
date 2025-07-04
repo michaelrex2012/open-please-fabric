@@ -192,7 +192,7 @@ public class OpenPlease implements ModInitializer {
 		ConfigEntryBuilder entryBuilder = builder.entryBuilder();
 
 		general.addEntry(entryBuilder
-				.startBooleanToggle(Text.translatable("option.openplease.optionA"), true)
+				.startBooleanToggle(Text.translatable("option.openplease.door_toggle"), true)
 				.setDefaultValue(true)
 				.setTooltip(Text.translatable("Defines if doors auto-open"))
 				.setSaveConsumer(newValue -> {
