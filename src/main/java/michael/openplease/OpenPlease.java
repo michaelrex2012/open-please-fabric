@@ -4,21 +4,17 @@ import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.lwjgl.glfw.GLFW;
 
 public class OpenPlease implements ModInitializer {
 	public float doorDistance = 4;
@@ -28,6 +24,8 @@ public class OpenPlease implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		ModConfig.load();
+
 		ServerTickEvents.END_WORLD_TICK.register(this::onWorldTick);
 	}
 
@@ -45,30 +43,30 @@ public class OpenPlease implements ModInitializer {
 							if (isDoor(world, pos) && ModConfig.DoorAutoOpen) {
 								boolean oldStateDoor = world.getBlockState(pos).get(DoorBlock.OPEN);
 								handleDoor(world, pos, playerPos);
-								if (oldStateDoor && !world.getBlockState(pos).get(DoorBlock.OPEN) && toggleSound) {
+								if (oldStateDoor && !world.getBlockState(pos).get(DoorBlock.OPEN) && ModConfig.ToggleSound) {
 									world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_DOOR_CLOSE, SoundCategory.BLOCKS, 1.0f, 1.0f);
 								}
-								if (!oldStateDoor && world.getBlockState(pos).get(DoorBlock.OPEN) && toggleSound) {
+								if (!oldStateDoor && world.getBlockState(pos).get(DoorBlock.OPEN) && ModConfig.ToggleSound) {
 									world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_DOOR_OPEN, SoundCategory.BLOCKS, 1.0f, 1.0f);
 								}
 							}
 							if (isTrapdoor(world, pos) && ModConfig.TrapdoorAutoOpen) {
 								boolean oldStateTrapDoor = world.getBlockState(pos).get(TrapdoorBlock.OPEN);
 								handleTrapdoor(world, pos, playerPos);
-								if (oldStateTrapDoor && !world.getBlockState(pos).get(TrapdoorBlock.OPEN) && toggleSound) {
+								if (oldStateTrapDoor && !world.getBlockState(pos).get(TrapdoorBlock.OPEN) && ModConfig.ToggleSound) {
 									world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_TRAPDOOR_CLOSE, SoundCategory.BLOCKS, 1.0f, 1.0f);
 								}
-								if (!oldStateTrapDoor && world.getBlockState(pos).get(TrapdoorBlock.OPEN) && toggleSound) {
+								if (!oldStateTrapDoor && world.getBlockState(pos).get(TrapdoorBlock.OPEN) && ModConfig.ToggleSound) {
 									world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_TRAPDOOR_OPEN, SoundCategory.BLOCKS, 1.0f, 1.0f);
 								}
 							}
 							if (isFenceGate(world, pos) && ModConfig.GateAutoOpen) {
 								boolean oldStateFenceGate = world.getBlockState(pos).get(FenceGateBlock.OPEN);
 								handleFenceGate(world, pos, playerPos);
-								if (oldStateFenceGate && !world.getBlockState(pos).get(FenceGateBlock.OPEN) && toggleSound) {
+								if (oldStateFenceGate && !world.getBlockState(pos).get(FenceGateBlock.OPEN) && ModConfig.ToggleSound) {
 									world.playSound(null, pos, SoundEvents.BLOCK_FENCE_GATE_CLOSE, SoundCategory.BLOCKS, 1.0f, 1.0f);
 								}
-								if (!oldStateFenceGate && world.getBlockState(pos).get(FenceGateBlock.OPEN) && toggleSound) {
+								if (!oldStateFenceGate && world.getBlockState(pos).get(FenceGateBlock.OPEN) && ModConfig.ToggleSound) {
 									world.playSound(null, pos, SoundEvents.BLOCK_FENCE_GATE_OPEN, SoundCategory.BLOCKS, 1.0f, 1.0f);
 								}
 							}
@@ -135,7 +133,7 @@ public class OpenPlease implements ModInitializer {
 		ConfigEntryBuilder entryBuilder = builder.entryBuilder();
 
 		general.addEntry(entryBuilder
-				.startBooleanToggle(Text.translatable("option.openplease.door_toggle"), true)
+				.startBooleanToggle(Text.translatable("option.openplease.door_toggle"), ModConfig.DoorAutoOpen)
 				.setDefaultValue(true)
 				.setTooltip(Text.translatable("Defines if doors auto-open"))
 				.setSaveConsumer(newValue -> ModConfig.DoorAutoOpen = newValue)
@@ -143,7 +141,7 @@ public class OpenPlease implements ModInitializer {
 		);
 
 		general.addEntry(entryBuilder
-				.startBooleanToggle(Text.translatable("option.openplease.trapdoor_toggle"), true)
+				.startBooleanToggle(Text.translatable("option.openplease.trapdoor_toggle"), ModConfig.TrapdoorAutoOpen)
 				.setDefaultValue(true)
 				.setTooltip(Text.translatable("Defines if trapdoors auto-open"))
 				.setSaveConsumer(newValue -> ModConfig.TrapdoorAutoOpen = newValue)
@@ -151,7 +149,7 @@ public class OpenPlease implements ModInitializer {
 		);
 
 		general.addEntry(entryBuilder
-				.startBooleanToggle(Text.translatable("option.openplease.gate_toggle"), true)
+				.startBooleanToggle(Text.translatable("option.openplease.gate_toggle"), ModConfig.GateAutoOpen)
 				.setDefaultValue(true)
 				.setTooltip(Text.translatable("Defines if gates auto-open"))
 				.setSaveConsumer(newValue -> ModConfig.GateAutoOpen = newValue)
@@ -159,7 +157,7 @@ public class OpenPlease implements ModInitializer {
 		);
 
 		general.addEntry(entryBuilder
-				.startBooleanToggle(Text.translatable("option.openplease.toggle_sound"), true)
+				.startBooleanToggle(Text.translatable("option.openplease.toggle_sound"), ModConfig.ToggleSound)
 				.setDefaultValue(true)
 				.setTooltip(Text.translatable("Defines auto-open sound plays"))
 				.setSaveConsumer(newValue -> ModConfig.ToggleSound = newValue)

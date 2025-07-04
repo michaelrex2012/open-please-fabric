@@ -12,7 +12,7 @@ public class ModConfig {
     public static boolean DoorAutoOpen = true;
     public static boolean TrapdoorAutoOpen = true;
     public static boolean GateAutoOpen = true;
-    public static boolean ToggleSound = true
+    public static boolean ToggleSound = true;
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final File CONFIG_FILE = new File("config/openplease.json");
