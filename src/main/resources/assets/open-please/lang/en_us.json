@@ -8,5 +8,6 @@
 
   "option.openplease.door_toggle": "Door Auto-Open",
   "option.openplease.trapdoor_toggle": "Trapdoor Auto-Open",
-  "option.openplease.gate_toggle": "Gate Auto-Open"
+  "option.openplease.gate_toggle": "Gate Auto-Open",
+  "option.openplease.toggle_sound": "Auto-Open Sound"
 }
