@@ -20,8 +20,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 public class OpenPlease implements ModInitializer {
 	public float doorDistance = 4;
 	public static KeyBinding openToggle;
@@ -185,7 +183,7 @@ public class OpenPlease implements ModInitializer {
 			world.setBlockState(fenceGatePos, world.getBlockState(fenceGatePos).with(FenceGateBlock.OPEN, false));
 		}
 	}
-	public static void openConfigScreen(Screen parent) {
+	public static Screen openConfigScreen(Screen parent) {
 		ConfigBuilder builder = ConfigBuilder.create()
 				.setParentScreen(parent)
 				.setTitle(Text.translatable("title.openplease.config"));
@@ -194,9 +192,9 @@ public class OpenPlease implements ModInitializer {
 		ConfigEntryBuilder entryBuilder = builder.entryBuilder();
 
 		general.addEntry(entryBuilder
-				.startStrField(Text.translatable("option.openplease.optionA"), "what")
-				.setDefaultValue("This is the default value")
-				.setTooltip(Text.translatable("This option is awesome!"))
+				.startBooleanToggle(Text.translatable("option.openplease.optionA"), true)
+				.setDefaultValue(true)
+				.setTooltip(Text.translatable("Defines if doors auto-open"))
 				.setSaveConsumer(newValue -> {
 					// Save the new value to your config
 				})
@@ -208,5 +206,6 @@ public class OpenPlease implements ModInitializer {
 		});
 
 		MinecraftClient.getInstance().setScreen(builder.build());
+		return builder.build();
 	}
 }

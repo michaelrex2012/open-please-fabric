@@ -16,6 +16,9 @@
 	"entrypoints": {
 		"main": [
 			"michael.openplease.OpenPlease"
+		],
+		"modmenu": [
+			"michael.openplease.ModMenuIntegration"
 		]
 	},
 	"depends": {
@@ -27,7 +30,7 @@
 	"suggests": {
 		"another-mod": "*"
 	},
-	"mixins": [
-		"openplease.mixins.json"
-	]
+	"custom": {
+		"modmenu:api": true
+	}
 }
