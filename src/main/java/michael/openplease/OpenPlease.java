@@ -25,71 +25,14 @@ public class OpenPlease implements ModInitializer {
 	public static KeyBinding openToggle;
 	public static KeyBinding soundToggle;
 	public static KeyBinding getStates;
-	public boolean toggleOpen = true;
-	public boolean toggleSound = true;
 
 	@Override
 	public void onInitialize() {
-
-		openToggle = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-				"key.openplease.toggleopen",
-				InputUtil.Type.KEYSYM,
-				GLFW.GLFW_KEY_R,
-				"category.openplease"
-		));
-		soundToggle = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-				"key.openplease.togglesound",
-				InputUtil.Type.KEYSYM,
-				GLFW.GLFW_KEY_Y,
-				"category.openplease"
-		));
-		getStates = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-				"key.openplease.getstates",
-				InputUtil.Type.KEYSYM,
-				GLFW.GLFW_KEY_U,
-				"category.openplease"
-		));
-
 		ServerTickEvents.END_WORLD_TICK.register(this::onWorldTick);
 	}
 
 	private void onWorldTick(ServerWorld world) {
-		if (openToggle.wasPressed()){
-			toggleOpen = !toggleOpen;
-
-			if (toggleOpen) {
-				MinecraftClient.getInstance().inGameHud.setOverlayMessage(Text.literal("Auto-Open Enabled!").formatted(Formatting.GREEN), true);
-			}
-			if (!toggleOpen) {
-				MinecraftClient.getInstance().inGameHud.setOverlayMessage(Text.literal("Auto-Open Disabled!").formatted(Formatting.RED), true);
-			}
-		}
-		if (soundToggle.wasPressed()){
-			toggleSound = !toggleSound;
-
-			if (toggleSound) {
-				MinecraftClient.getInstance().inGameHud.setOverlayMessage(Text.literal("Sound Enabled!").formatted(Formatting.GREEN), true);
-			}
-			if (!toggleSound) {
-				MinecraftClient.getInstance().inGameHud.setOverlayMessage(Text.literal("Sound Disabled!").formatted(Formatting.RED), true);
-			}
-		}
-		if (getStates.wasPressed()){
-			Formatting toggleOpenFormat = toggleOpen ? Formatting.GREEN : Formatting.RED;
-			Formatting toggleSoundFormat = toggleSound ? Formatting.GREEN : Formatting.RED;
-			String toggleOpenText = toggleOpen ? "Enabled" : "Disabled";
-			String toggleSoundText = toggleSound ? "Enabled" : "Disabled";
-
-			MinecraftClient.getInstance().inGameHud.setOverlayMessage(
-					Text.literal("Auto-Open: ").formatted(Formatting.WHITE)
-							.append(Text.literal(toggleOpenText).formatted(toggleOpenFormat))
-							.append(Text.literal(" Sound: ").formatted(Formatting.WHITE))
-							.append(Text.literal(toggleSoundText).formatted(toggleSoundFormat)),
-					true
-			);
-		}
-
-		if (toggleOpen) {
+		if (true) {
 			world.getPlayers().forEach(player -> {
 				BlockPos playerPos = player.getBlockPos();
 
@@ -99,7 +42,7 @@ public class OpenPlease implements ModInitializer {
 						for (int z = -4; z <= 4; z++) {
 							BlockPos pos = playerPos.add(x, y, z);
 
-							if (isDoor(world, pos)) {
+							if (isDoor(world, pos) && ModConfig.DoorAutoOpen) {
 								boolean oldStateDoor = world.getBlockState(pos).get(DoorBlock.OPEN);
 								handleDoor(world, pos, playerPos);
 								if (oldStateDoor && !world.getBlockState(pos).get(DoorBlock.OPEN) && toggleSound) {
@@ -109,7 +52,7 @@ public class OpenPlease implements ModInitializer {
 									world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_DOOR_OPEN, SoundCategory.BLOCKS, 1.0f, 1.0f);
 								}
 							}
-							if (isTrapdoor(world, pos)) {
+							if (isTrapdoor(world, pos) && ModConfig.TrapdoorAutoOpen) {
 								boolean oldStateTrapDoor = world.getBlockState(pos).get(TrapdoorBlock.OPEN);
 								handleTrapdoor(world, pos, playerPos);
 								if (oldStateTrapDoor && !world.getBlockState(pos).get(TrapdoorBlock.OPEN) && toggleSound) {
@@ -119,7 +62,7 @@ public class OpenPlease implements ModInitializer {
 									world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_TRAPDOOR_OPEN, SoundCategory.BLOCKS, 1.0f, 1.0f);
 								}
 							}
-							if (isFenceGate(world, pos)) {
+							if (isFenceGate(world, pos) && ModConfig.GateAutoOpen) {
 								boolean oldStateFenceGate = world.getBlockState(pos).get(FenceGateBlock.OPEN);
 								handleFenceGate(world, pos, playerPos);
 								if (oldStateFenceGate && !world.getBlockState(pos).get(FenceGateBlock.OPEN) && toggleSound) {
@@ -195,15 +138,35 @@ public class OpenPlease implements ModInitializer {
 				.startBooleanToggle(Text.translatable("option.openplease.door_toggle"), true)
 				.setDefaultValue(true)
 				.setTooltip(Text.translatable("Defines if doors auto-open"))
-				.setSaveConsumer(newValue -> {
-					// Save the new value to your config
-				})
+				.setSaveConsumer(newValue -> ModConfig.DoorAutoOpen = newValue)
 				.build()
 		);
 
-		builder.setSavingRunnable(() -> {
-			// Write to config file here
-		});
+		general.addEntry(entryBuilder
+				.startBooleanToggle(Text.translatable("option.openplease.trapdoor_toggle"), true)
+				.setDefaultValue(true)
+				.setTooltip(Text.translatable("Defines if trapdoors auto-open"))
+				.setSaveConsumer(newValue -> ModConfig.TrapdoorAutoOpen = newValue)
+				.build()
+		);
+
+		general.addEntry(entryBuilder
+				.startBooleanToggle(Text.translatable("option.openplease.gate_toggle"), true)
+				.setDefaultValue(true)
+				.setTooltip(Text.translatable("Defines if gates auto-open"))
+				.setSaveConsumer(newValue -> ModConfig.GateAutoOpen = newValue)
+				.build()
+		);
+
+		general.addEntry(entryBuilder
+				.startBooleanToggle(Text.translatable("option.openplease.toggle_sound"), true)
+				.setDefaultValue(true)
+				.setTooltip(Text.translatable("Defines auto-open sound plays"))
+				.setSaveConsumer(newValue -> ModConfig.ToggleSound = newValue)
+				.build()
+		);
+
+		builder.setSavingRunnable(ModConfig::save);
 
 		MinecraftClient.getInstance().setScreen(builder.build());
 		return builder.build();

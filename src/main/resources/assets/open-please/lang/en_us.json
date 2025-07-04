@@ -2,5 +2,11 @@
   "key.openplease.toggleopen": "Toggle Auto-Open",
   "key.openplease.togglesound": "Toggle Sound",
   "key.openplease.getstates": "Get States",
-  "category.openplease": "Open Please!"
+  "category.openplease": "Open Please!",
+
+  "title.openplease.config": "Open Please Config",
+
+  "option.openplease.door_toggle": "Door Auto-Open",
+  "option.openplease.trapdoor_toggle": "Trapdoor Auto-Open",
+  "option.openplease.gate_toggle": "Gate Auto-Open"
 }
