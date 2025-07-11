@@ -1,8 +1,6 @@
 package michael.openplease;
 
-import me.shedaniel.clothconfig2.api.ConfigBuilder;
-import me.shedaniel.clothconfig2.api.ConfigCategory;
-import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
+import me.shedaniel.clothconfig2.api.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.block.*;
@@ -133,7 +131,6 @@ public class OpenPlease implements ModInitializer {
 		ConfigCategory general = builder.getOrCreateCategory(Text.translatable("category.openplease.general"));
 		ConfigEntryBuilder entryBuilder = builder.entryBuilder();
 
-
 		general.addEntry(entryBuilder
 				.startBooleanToggle(Text.translatable("option.openplease.door_toggle"), ModConfig.DoorAutoOpen)
 				.setDefaultValue(true)
@@ -167,7 +164,7 @@ public class OpenPlease implements ModInitializer {
 		);
 
 		general.addEntry(entryBuilder
-				.startTextDescription(Text.translatable("option.openplease.about_text").formatted(Formatting.ITALIC))
+				.startTextDescription(Text.translatable("option.openplease.info").formatted(Formatting.ITALIC))
 				.setColor(Color.GRAY.getRGB())
 				.build()
 		);
