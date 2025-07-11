@@ -13,9 +13,11 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import java.awt.*;
 
 public class OpenPlease implements ModInitializer {
 	public float doorDistance = 4;
@@ -131,6 +133,7 @@ public class OpenPlease implements ModInitializer {
 		ConfigCategory general = builder.getOrCreateCategory(Text.translatable("category.openplease.general"));
 		ConfigEntryBuilder entryBuilder = builder.entryBuilder();
 
+
 		general.addEntry(entryBuilder
 				.startBooleanToggle(Text.translatable("option.openplease.door_toggle"), ModConfig.DoorAutoOpen)
 				.setDefaultValue(true)
@@ -160,6 +163,12 @@ public class OpenPlease implements ModInitializer {
 				.setDefaultValue(true)
 				.setTooltip(Text.translatable("Defines auto-open sound plays"))
 				.setSaveConsumer(newValue -> ModConfig.ToggleSound = newValue)
+				.build()
+		);
+
+		general.addEntry(entryBuilder
+				.startTextDescription(Text.translatable("option.openplease.about_text").formatted(Formatting.ITALIC))
+				.setColor(Color.GRAY.getRGB())
 				.build()
 		);
 
