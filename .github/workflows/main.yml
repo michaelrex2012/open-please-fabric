@@ -1,0 +1,45 @@
+name: Publish Mod
+
+on:
+  release:
+    types: [published]  # Trigger only when a release is published
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write  # Required for GitHub release publishing
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: temurin
+
+      - name: Build the mod
+        run: ./gradlew build
+
+      - name: Publish mod
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          # Modrinth (optional)
+          modrinth-id: AANobbMI
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+          # CurseForge (optional)
+          curseforge-id: 394468
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+
+          # GitHub Releases (optional)
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+          # Optional config (you can customize more):
+          files: |
+            build/libs/*.jar
+          changelog-file: CHANGELOG.md
+          version-type: release
