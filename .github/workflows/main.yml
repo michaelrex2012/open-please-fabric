@@ -28,11 +28,11 @@ jobs:
         uses: Kir-Antipov/mc-publish@v3.3
         with:
           # Modrinth (optional)
-          modrinth-id: AANobbMI
+          modrinth-id: LBxh7FnI
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
           # CurseForge (optional)
-          curseforge-id: 394468
+          curseforge-id: 1154144
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
           # GitHub Releases (optional)
