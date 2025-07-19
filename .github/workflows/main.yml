@@ -12,18 +12,6 @@ jobs:
       contents: write  # Required for GitHub release publishing
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: 17
-          distribution: temurin
-
-      - name: Build the mod
-        run: ./gradlew build
-
       - name: Publish mod
         uses: Kir-Antipov/mc-publish@v3.3
         with:
