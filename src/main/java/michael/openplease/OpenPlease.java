@@ -92,7 +92,7 @@ public class OpenPlease implements ModInitializer {
 	}
 
 	private void handleDoor(World world, BlockPos doorPos, BlockPos playerPos) {
-		double distance = playerPos.getSquaredDistance(doorPos.getX(), doorPos.getY(), doorPos.getZ());
+		double distance = Math.sqrt((playerPos.getX() - doorPos.getX()) + (playerPos.getY() - doorPos.getY()) + (playerPos.getZ() - doorPos.getZ()));
 
 		boolean isOpen = world.getBlockState(doorPos).get(DoorBlock.OPEN);
 		if (distance <= doorDistance + 2 && !isOpen) {
