@@ -13,6 +13,7 @@ public class ModConfig {
     public static boolean TrapdoorAutoOpen = true;
     public static boolean GateAutoOpen = true;
     public static boolean ToggleSound = true;
+    public static boolean distanceFar = true;
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final File CONFIG_FILE = new File("config/openplease.json");
@@ -25,6 +26,7 @@ public class ModConfig {
                 TrapdoorAutoOpen = data.enableTrapdoorAutoOpen;
                 GateAutoOpen = data.enableGateAutoOpen;
                 ToggleSound = data.enableSound;
+                distanceFar = data.enableDistanceFar;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -42,6 +44,7 @@ public class ModConfig {
                 data.enableTrapdoorAutoOpen = TrapdoorAutoOpen;
                 data.enableGateAutoOpen = GateAutoOpen;
                 data.enableSound = ToggleSound;
+                data.enableDistanceFar = distanceFar;
                 GSON.toJson(data, writer);
             }
         } catch (IOException e) {
@@ -51,6 +54,7 @@ public class ModConfig {
 
     // Inner static class to store actual config data for serialization
     private static class ModConfigData {
+        public boolean enableDistanceFar = true;
         public boolean enableDoorAutoOpen = true;
         public boolean enableTrapdoorAutoOpen = true;
         public boolean enableGateAutoOpen = true;

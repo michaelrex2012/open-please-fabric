@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 import java.awt.*;
 
 public class OpenPlease implements ModInitializer {
-	public float doorDistance = 4;
+    public float doorDistance;
 	public static KeyBinding openToggle;
 	public static KeyBinding soundToggle;
 	public static KeyBinding getStates;
@@ -32,6 +32,12 @@ public class OpenPlease implements ModInitializer {
 	}
 
 	private void onWorldTick(ServerWorld world) {
+        if (ModConfig.distanceFar) {
+            doorDistance = 4;
+        } else if (!ModConfig.distanceFar) {
+            doorDistance = 2;
+        }
+
         world.getPlayers().forEach(player -> {
                     BlockPos playerPos = player.getBlockPos();
 
@@ -155,6 +161,14 @@ public class OpenPlease implements ModInitializer {
 		ConfigEntryBuilder entryBuilder = builder.entryBuilder();
 
 		general.addEntry(entryBuilder
+                .startBooleanToggle(Text.translatable("option.openplease.distance"), ModConfig.distanceFar)
+                .setDefaultValue(true)
+                .setTooltip(Text.translatable("Distance to open/close from door"))
+                .setSaveConsumer(newValue -> ModConfig.distanceFar = newValue)
+                .build()
+        );
+
+        general.addEntry(entryBuilder
 				.startBooleanToggle(Text.translatable("option.openplease.door_toggle"), ModConfig.DoorAutoOpen)
 				.setDefaultValue(true)
 				.setTooltip(Text.translatable("Defines if doors auto-open"))
